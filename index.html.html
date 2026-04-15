@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TD² Delights — Build Your Equation Box</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark:  #1A1008;
+    --cream: #FFF8F0;
+    --amber: #C8873A;
+    --mid:   #E8D5BC;
+    --gold:  #8B6A00;
+    --brown: #8B4513;
+    --light: #F5E6D3;
+    --texas:    #C8873A;
+    --football: #8B3A1A;
+    --court:    #1A4A6B;
+    --diamond:  #5A1A1A;
+    --track:    #3A3A1A;
+    --fruit:    #2E6B3E;
+    --math:     #4A3078;
+    --varx2:    #8B6A00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    font-family: 'Lora', Georgia, serif;
+    min-height: 100vh;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* Diamond pattern background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg,
+        transparent, transparent 28px,
+        rgba(200,135,58,0.04) 28px, rgba(200,135,58,0.04) 30px),
+      repeating-linear-gradient(-45deg,
+        transparent, transparent 28px,
+        rgba(200,135,58,0.04) 28px, rgba(200,135,58,0.04) 30px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(200,135,58,0.3);
+    position: relative;
+  }
+
+  .header-diamonds {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .diamond-rule {
+    height: 1px;
+    width: 80px;
+    background: var(--amber);
+  }
+
+  .diamond-icon {
+    width: 10px; height: 10px;
+    background: var(--amber);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+  .diamond-icon.sm {
+    width: 6px; height: 6px;
+    background: var(--gold);
+  }
+
+  .brand-mark {
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .headline {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .headline span {
+    color: var(--cream);
+  }
+
+  .subhead {
+    font-style: italic;
+    font-size: 15px;
+    color: var(--gold);
+    margin-top: 6px;
+  }
+
+  /* ── INSTRUCTION STRIP ── */
+  .instruction-strip {
+    background: rgba(200,135,58,0.08);
+    border: 1px solid rgba(200,135,58,0.25);
+    border-radius: 4px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .step-badges {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .step-badge {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--amber);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .instruction-text {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+
+  .instruction-text strong {
+    color: var(--amber);
+  }
+
+  /* ── DROPDOWNS GRID ── */
+  .selectors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 560px) {
+    .selectors-grid { grid-template-columns: 1fr; }
+  }
+
+  .selector-card {
+    background: rgba(255,248,240,0.04);
+    border: 1px solid rgba(200,135,58,0.2);
+    border-radius: 6px;
+    padding: 18px;
+    transition: border-color 0.25s, background 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .selector-card.filled {
+    border-color: rgba(200,135,58,0.55);
+    background: rgba(200,135,58,0.06);
+  }
+
+  .selector-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--amber);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .selector-card.filled::before { opacity: 1; }
+
+  .loaf-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .loaf-number {
+    width: 22px; height: 22px;
+    background: var(--amber);
+    color: var(--dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .selector-card.filled .loaf-number {
+    background: var(--amber);
+  }
+
+  select {
+    width: 100%;
+    background: rgba(26,16,8,0.7);
+    border: 1px solid rgba(200,135,58,0.35);
+    border-radius: 4px;
+    color: var(--cream);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 13.5px;
+    padding: 10px 36px 10px 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8873A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+
+  select option {
+    background: #2A1A0A;
+    color: var(--cream);
+    font-family: 'Lora', Georgia, serif;
+  }
+
+  select option.opt-group-header {
+    color: var(--amber);
+    font-weight: 700;
+    font-style: italic;
+  }
+
+  .selection-preview {
+    margin-top: 10px;
+    min-height: 36px;
+    padding: 8px 10px;
+    background: rgba(200,135,58,0.07);
+    border-radius: 4px;
+    border-left: 2px solid transparent;
+    transition: all 0.25s;
+    display: none;
+  }
+
+  .selection-preview.visible {
+    display: block;
+    border-left-color: var(--amber);
+  }
+
+  .preview-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--amber);
+    line-height: 1.3;
+  }
+
+  .preview-meta {
+    font-size: 11px;
+    color: var(--gold);
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .preview-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mid);
+    float: right;
+    margin-top: -18px;
+  }
+
+  .collection-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+
+  /* ── PRICING PANEL ── */
+  .pricing-panel {
+    background: rgba(255,248,240,0.03);
+    border: 1px solid rgba(200,135,58,0.25);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+
+  .pricing-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pricing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--mid);
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(200,135,58,0.12);
+  }
+
+  .pricing-row:last-child { border-bottom: none; }
+
+  .pricing-row.discount {
+    color: #7BAF7A;
+    font-style: italic;
+  }
+
+  .pricing-row.total {
+    border-top: 1.5px solid var(--amber);
+    border-bottom: none;
+    margin-top: 6px;
+    padding-top: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .pricing-row .label { color: var(--gold); font-size: 12px; }
+  .pricing-row.total .label { font-size: 15px; color: var(--mid); font-weight: 600; }
+
+  .savings-badge {
+    display: inline-block;
+    background: rgba(123,175,122,0.15);
+    border: 1px solid rgba(123,175,122,0.3);
+    color: #7BAF7A;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-style: italic;
+    margin-left: 10px;
+  }
+
+  .slots-remaining {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .slot-pips {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 6px;
+  }
+
+  .pip {
+    width: 32px; height: 4px;
+    border-radius: 2px;
+    background: rgba(200,135,58,0.2);
+    transition: background 0.3s;
+  }
+
+  .pip.filled { background: var(--amber); }
+
+  /* ── CTA BUTTON ── */
+  .cta-area {
+    text-align: center;
+  }
+
+  .cta-note {
+    font-size: 12px;
+    color: var(--gold);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--amber);
+    color: var(--dark);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-btn:hover:not(:disabled) {
+    background: #D4943F;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(200,135,58,0.35);
+  }
+
+  .cta-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .cta-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* ── ALLERGEN WARNING ── */
+  .allergen-warning {
+    background: rgba(200,64,64,0.08);
+    border: 1px solid rgba(200,64,64,0.3);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: #E88080;
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .allergen-warning.visible { display: flex; }
+  .allergen-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(200,135,58,0.2);
+    font-size: 12px;
+    color: var(--gold);
+    font-style: italic;
+    line-height: 2;
+  }
+
+  /* ── PULSE ANIMATION for incomplete ── */
+  @keyframes pulse-amber {
+    0%, 100% { border-color: rgba(200,135,58,0.2); }
+    50%       { border-color: rgba(200,135,58,0.7); }
+  }
+
+  .selector-card.pulse { animation: pulse-amber 1s ease 2; }
+
+  /* ── SUMMARY SECTION (shows after all 4 filled) ── */
+  .summary-reveal {
+    background: rgba(200,135,58,0.06);
+    border: 1px solid rgba(200,135,58,0.35);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .summary-reveal.visible { display: block; }
+
+  .summary-title {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    color: var(--mid);
+  }
+
+  .summary-item-name { color: var(--cream); }
+  .summary-item-price { color: var(--amber); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand-mark">TD² Delights</div>
+    <div class="header-diamonds">
+      <div class="diamond-rule"></div>
+      <div class="diamond-icon sm"></div>
+      <div class="diamond-icon"></div>
+      <div class="diamond-icon sm"></div>
+      <div class="diamond-rule"></div>
+    </div>
+    <h1 class="headline">Build Your <span>Equation Box</span></h1>
+    <p class="subhead">Choose any 4 loaves &mdash; mixed, matched, gifted, or kept all to yourself</p>
+  </div>
+
+  <!-- INSTRUCTION STRIP -->
+  <div class="instruction-strip">
+    <div class="step-badges">
+      <div class="step-badge">1</div>
+      <div class="step-badge">2</div>
+      <div class="step-badge">3</div>
+    </div>
+    <div class="instruction-text">
+      <strong>Select your 4 loaves</strong> from the dropdowns below.
+      Your box price is calculated automatically at <strong>10% off retail</strong>.
+      When you&rsquo;re happy with your selection, tap <strong>Add to Cart</strong>.
+    </div>
+  </div>
+
+  <!-- SLOT PIPS -->
+  <div class="slots-remaining">
+    <div class="slot-pips">
+      <div class="pip" id="pip-1"></div>
+      <div class="pip" id="pip-2"></div>
+      <div class="pip" id="pip-3"></div>
+      <div class="pip" id="pip-4"></div>
+    </div>
+  </div>
+
+  <!-- 4 DROPDOWNS -->
+  <div class="selectors-grid">
+    <div class="selector-card" id="card-1">
+      <div class="loaf-label"><div class="loaf-number">1</div> Loaf One</div>
+      <select id="sel-1" onchange="updateSelection()">
+        <option value="">— Choose a loaf —</option>
+      </select>
+      <div class="selection-preview" id="preview-1">
+        <div class="preview-name" id="pname-1"></div>
+        <div class="preview-meta" id="pmeta-1"></div>
+        <div class="preview-price" id="pprice-1"></div>
+      </div>
+    </div>
+
+    <div class="selector-card" id="card-2">
+      <div class="loaf-label"><div class="loaf-number">2</div> Loaf Two</div>
+      <select id="sel-2" onchange="updateSelection()">
+        <option value="">— Choose a loaf —</option>
+      </select>
+      <div class="selection-preview" id="preview-2">
+        <div class="preview-name" id="pname-2"></div>
+        <div class="preview-meta" id="pmeta-2"></div>
+        <div class="preview-price" id="pprice-2"></div>
+      </div>
+    </div>
+
+    <div class="selector-card" id="card-3">
+      <div class="loaf-label"><div class="loaf-number">3</div> Loaf Three</div>
+      <select id="sel-3" onchange="updateSelection()">
+        <option value="">— Choose a loaf —</option>
+      </select>
+      <div class="selection-preview" id="preview-3">
+        <div class="preview-name" id="pname-3"></div>
+        <div class="preview-meta" id="pmeta-3"></div>
+        <div class="preview-price" id="pprice-3"></div>
+      </div>
+    </div>
+
+    <div class="selector-card" id="card-4">
+      <div class="loaf-label"><div class="loaf-number">4</div> Loaf Four</div>
+      <select id="sel-4" onchange="updateSelection()">
+        <option value="">— Choose a loaf —</option>
+      </select>
+      <div class="selection-preview" id="preview-4">
+        <div class="preview-name" id="pname-4"></div>
+        <div class="preview-meta" id="pmeta-4"></div>
+        <div class="preview-price" id="pprice-4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY (visible when all 4 filled) -->
+  <div class="summary-reveal" id="summary-reveal">
+    <div class="summary-title">&#x2605; Your Equation Box</div>
+    <div class="summary-items" id="summary-items"></div>
+  </div>
+
+  <!-- ALLERGEN WARNING -->
+  <div class="allergen-warning" id="allergen-warning">
+    <div class="allergen-icon">⚠️</div>
+    <div>
+      <strong>Allergen Notice:</strong>
+      Your selection includes <span id="allergen-list"></span>.
+      Please review our full allergen information before ordering.
+      Contact us at <strong>hello@tdsquareddelights.com</strong> with any questions.
+    </div>
+  </div>
+
+  <!-- PRICING PANEL -->
+  <div class="pricing-panel">
+    <div class="pricing-rows">
+      <div class="pricing-row">
+        <span class="label">Retail Value (4 loaves)</span>
+        <span id="retail-total">—</span>
+      </div>
+      <div class="pricing-row discount">
+        <span class="label">Equation Box Discount (10% off)</span>
+        <span id="discount-amt">—</span>
+      </div>
+      <div class="pricing-row total">
+        <span class="label">Your Box Price
+          <span class="savings-badge" id="savings-badge" style="display:none"></span>
+        </span>
+        <span id="box-total">Select 4 loaves</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-area">
+    <div class="cta-note" id="cta-note">Choose all 4 loaves to unlock your box price</div>
+    <button class="cta-btn" id="cta-btn" disabled onclick="addToCart()">
+      Add to Cart
+    </button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="header-diamonds" style="justify-content:center;margin-bottom:10px;">
+      <div class="diamond-rule" style="width:40px"></div>
+      <div class="diamond-icon sm"></div>
+      <div class="diamond-icon" style="width:7px;height:7px"></div>
+      <div class="diamond-icon sm"></div>
+      <div class="diamond-rule" style="width:40px"></div>
+    </div>
+    Baked fresh to order &nbsp;&middot;&nbsp; Red Oak, Texas &nbsp;&middot;&nbsp; Fort Worth &amp; Dallas<br>
+    tdsquareddelights.com &nbsp;&middot;&nbsp; (469) 552-5935 &nbsp;&middot;&nbsp; hello@tdsquareddelights.com<br>
+    <em>two to the power of delicious</em>
+  </div>
+
+</div><!-- end wrapper -->
+
+<script>
+// ── CAKE DATA ─────────────────────────────────────────────────
+const CAKES = [
+  // Texas Collection
+  { id:1,  name:"The Bishop Arts Praline",     flavor:"Brown Butter Pecan",          collection:"Texas",    price:16, tier:"Standard", allergen:"Tree Nuts", color:"#C8873A" },
+  { id:2,  name:"The Big D Bourbon",           flavor:"Bourbon Salted Caramel",      collection:"Texas",    price:18, tier:"Luxury",   allergen:"",          color:"#C8873A" },
+  { id:3,  name:"The Stockyards Banana Pudding",flavor:"Banana Vanilla Wafer",       collection:"Texas",    price:16, tier:"Standard", allergen:"",          color:"#C8873A" },
+  { id:4,  name:"Funkytown Red Velvet",        flavor:"Red Velvet Cream Cheese",     collection:"Texas",    price:16, tier:"Standard", allergen:"",          color:"#C8873A" },
+  // Football Collection
+  { id:5,  name:"Touchdown Toffee",            flavor:"Toffee Dark Chocolate",       collection:"Football", price:16, tier:"Standard", allergen:"Soy",       color:"#8B3A1A" },
+  { id:6,  name:"Fourth Quarter Fudge",        flavor:"Double Chocolate Fudge",      collection:"Football", price:16, tier:"Standard", allergen:"",          color:"#8B3A1A" },
+  { id:7,  name:"Stadium S\u2019mores",        flavor:"Graham Marshmallow Ganache",  collection:"Football", price:17, tier:"Premium",  allergen:"Soy",       color:"#8B3A1A" },
+  { id:8,  name:"Ace of Cakes",                flavor:"Lemon Almond Gold Leaf",      collection:"Football", price:18, tier:"Luxury",   allergen:"Tree Nuts", color:"#8B3A1A" },
+  // Court Collection
+  { id:9,  name:"The Buzzer Beater",           flavor:"Espresso Chocolate Mocha",    collection:"Court",    price:16, tier:"Standard", allergen:"",          color:"#1A4A6B" },
+  { id:10, name:"The Full Court Press",        flavor:"Rum Raisin Brown Butter",     collection:"Court",    price:17, tier:"Premium",  allergen:"",          color:"#1A4A6B" },
+  { id:11, name:"The Overtime",                flavor:"Vanilla Honey Caramel",       collection:"Court",    price:16, tier:"Standard", allergen:"",          color:"#1A4A6B" },
+  { id:12, name:"The Paint",                   flavor:"Purple Yam Lavender",         collection:"Court",    price:17, tier:"Premium",  allergen:"",          color:"#1A4A6B" },
+  { id:13, name:"The Fast Break",              flavor:"Lemon Lime",                  collection:"Court",    price:15, tier:"Entry",    allergen:"",          color:"#1A4A6B" },
+  { id:14, name:"The Triple Double",           flavor:"Chocolate Caramel Pecan",     collection:"Court",    price:18, tier:"Luxury",   allergen:"Tree Nuts", color:"#1A4A6B" },
+  { id:15, name:"The Crossover",               flavor:"Jalape\u00f1o Chocolate",     collection:"Court",    price:17, tier:"Premium",  allergen:"",          color:"#1A4A6B" },
+  { id:16, name:"The High Post",               flavor:"Earl Grey Bergamot",          collection:"Court",    price:17, tier:"Premium",  allergen:"",          color:"#1A4A6B" },
+  // Diamond Collection
+  { id:17, name:"The Grand Slam",              flavor:"Dark Chocolate Black Cherry", collection:"Diamond",  price:17, tier:"Premium",  allergen:"",          color:"#5A1A1A" },
+  { id:18, name:"The Curveball",               flavor:"Lemon Poppy Seed",            collection:"Diamond",  price:15, tier:"Entry",    allergen:"",          color:"#5A1A1A" },
+  { id:19, name:"The Switch Hitter",           flavor:"Chocolate Vanilla Marble",    collection:"Diamond",  price:16, tier:"Standard", allergen:"",          color:"#5A1A1A" },
+  { id:20, name:"The Extra Innings",           flavor:"Apple Spice Caramel",         collection:"Diamond",  price:16, tier:"Standard", allergen:"",          color:"#5A1A1A" },
+  { id:21, name:"The Dugout",                  flavor:"Peanut Butter Chocolate",     collection:"Diamond",  price:16, tier:"Standard", allergen:"PEANUTS",   color:"#5A1A1A" },
+  { id:22, name:"The Stolen Base",             flavor:"Fresh Strawberry Vanilla",    collection:"Diamond",  price:16, tier:"Standard", allergen:"",          color:"#5A1A1A" },
+  // Track Collection
+  { id:23, name:"The Pole Position",           flavor:"Espresso Toffee",             collection:"Track",    price:16, tier:"Standard", allergen:"Soy",       color:"#3A3A1A" },
+  { id:24, name:"The Checkered Flag",          flavor:"Cookies & Cream",             collection:"Track",    price:16, tier:"Standard", allergen:"Soy",       color:"#3A3A1A" },
+  { id:25, name:"The Pit Stop",                flavor:"Salted Caramel Pretzel",      collection:"Track",    price:17, tier:"Premium",  allergen:"",          color:"#3A3A1A" },
+  { id:26, name:"The Drafting",                flavor:"Mocha Hazelnut Nutella",      collection:"Track",    price:17, tier:"Premium",  allergen:"Tree Nuts", color:"#3A3A1A" },
+  { id:27, name:"The Victory Lap",             flavor:"Champagne White Chocolate",   collection:"Track",    price:18, tier:"Luxury",   allergen:"",          color:"#3A3A1A" },
+  { id:28, name:"The Burnout",                 flavor:"Mexican Chocolate Chili",     collection:"Track",    price:17, tier:"Premium",  allergen:"",          color:"#3A3A1A" },
+  // Fruit Collection
+  { id:29, name:"The Strawberry Proof",        flavor:"Strawberry Cream Cheese",     collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:30, name:"The Apple Axiom",             flavor:"Brown Butter Apple Maple",    collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:31, name:"The Peach Theorem",           flavor:"Peach Vanilla Bean",          collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:32, name:"The Lemon Constant (e)",      flavor:"Lemon Curd Swirl",            collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:33, name:"The Berry Coefficient",       flavor:"Mixed Berry Blueberry Glaze", collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:34, name:"The Orange Zest Factor",      flavor:"Orange Cream",                collection:"Fruit",    price:16, tier:"Standard", allergen:"",          color:"#2E6B3E" },
+  { id:35, name:"The Pineapple Parabola",      flavor:"Pineapple Upside Down",       collection:"Fruit",    price:17, tier:"Premium",  allergen:"",          color:"#2E6B3E" },
+  // Math Collection
+  { id:36, name:"The Golden Ratio",            flavor:"Honey Almond Fibonacci Swirl",collection:"Math",     price:16, tier:"Standard", allergen:"Tree Nuts", color:"#4A3078" },
+  { id:37, name:"The Infinite Chai",           flavor:"Chai Cardamom Cream Cheese",  collection:"Math",     price:16, tier:"Standard", allergen:"",          color:"#4A3078" },
+  { id:38, name:"Sum of All Sweets",           flavor:"Choc Toffee Pecan Coconut",   collection:"Math",     price:17, tier:"Premium",  allergen:"Tree Nuts", color:"#4A3078" },
+  // Variable X²
+  { id:39, name:"Variable X\u00b2 \u2014 Monthly Selection", flavor:"Ask us for this month\u2019s flavor!", collection:"Variable X\u00b2", price:18, tier:"Luxury", allergen:"", color:"#8B6A00" },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// ★ MONTHLY AVAILABILITY — Edit this list each month ★
+//
+// To hide a loaf from the dropdowns, add its exact name below.
+// To bring it back, remove it from the list.
+// Capitalization must match exactly.
+// ═══════════════════════════════════════════════════════════════
+const UNAVAILABLE = [
+  // "The Dugout",         // example: remove peanut allergen loaf
+  // "The Fast Break",     // example: off rotation this month
+];
+
+// ── CART URL ─────────────────────────────────────────────────
+// Once your Equation Box product is live on GoDaddy, paste its
+// URL here (e.g. "https://tdsquareddelights.com/store/equation-box")
+// That's the only change needed to make Add to Cart fully live!
+const CART_URL = "https://tdsquareddelights.com/store/equation-box";
+
+// Group by collection
+const COLLECTIONS = [...new Set(CAKES.map(c => c.collection))];
+
+// ── BUILD DROPDOWNS ───────────────────────────────────────────
+function buildDropdowns() {
+  for (let i = 1; i <= 4; i++) {
+    const sel = document.getElementById(`sel-${i}`);
+    COLLECTIONS.forEach(coll => {
+      // Only include collections that have at least one available cake
+      const available = CAKES.filter(c =>
+        c.collection === coll && !UNAVAILABLE.includes(c.name)
+      );
+      if (available.length === 0) return;
+
+      const grp = document.createElement('optgroup');
+      grp.label = `— ${coll} Collection —`;
+      available.forEach(cake => {
+        const opt = document.createElement('option');
+        opt.value = cake.id;
+        opt.textContent = `${cake.name}  ·  $${cake.price}`;
+        if (cake.allergen) opt.textContent += `  ⚠`;
+        grp.appendChild(opt);
+      });
+      sel.appendChild(grp);
+    });
+  }
+}
+
+// ── UPDATE UI ─────────────────────────────────────────────────
+function updateSelection() {
+  let retailTotal = 0;
+  let filledCount = 0;
+  const allergens = new Set();
+  const selectedCakes = [];
+
+  for (let i = 1; i <= 4; i++) {
+    const sel   = document.getElementById(`sel-${i}`);
+    const card  = document.getElementById(`card-${i}`);
+    const prev  = document.getElementById(`preview-${i}`);
+    const pname = document.getElementById(`pname-${i}`);
+    const pmeta = document.getElementById(`pmeta-${i}`);
+    const pprice= document.getElementById(`pprice-${i}`);
+    const pip   = document.getElementById(`pip-${i}`);
+
+    if (sel.value) {
+      const cake = CAKES.find(c => c.id == sel.value);
+      filledCount++;
+      retailTotal += cake.price;
+      if (cake.allergen) allergens.add(cake.allergen);
+      selectedCakes.push(cake);
+
+      // Update preview card
+      card.classList.add('filled');
+      prev.classList.add('visible');
+      pname.innerHTML = `<span class="collection-dot" style="background:${cake.color}"></span>${cake.name}`;
+      pmeta.textContent = `${cake.collection} Collection · ${cake.tier}`;
+      pprice.textContent = `$${cake.price}`;
+      pip.classList.add('filled');
+    } else {
+      card.classList.remove('filled');
+      prev.classList.remove('visible');
+      pip.classList.remove('filled');
+    }
+  }
+
+  // Pricing calc
+  if (filledCount === 4) {
+    const discount   = Math.round(retailTotal * 0.10);
+    const boxPrice   = retailTotal - discount;
+    const savings    = discount;
+
+    document.getElementById('retail-total').textContent = `$${retailTotal}.00`;
+    document.getElementById('discount-amt').textContent  = `−$${discount}.00`;
+    document.getElementById('box-total').textContent     = `$${boxPrice}.00`;
+
+    const badge = document.getElementById('savings-badge');
+    badge.textContent = `You save $${savings}!`;
+    badge.style.display = 'inline-block';
+
+    // Summary
+    const summaryEl = document.getElementById('summary-reveal');
+    const summaryItems = document.getElementById('summary-items');
+    summaryEl.classList.add('visible');
+    summaryItems.innerHTML = selectedCakes.map(c =>
+      `<div class="summary-item">
+        <span class="summary-item-name">
+          <span class="collection-dot" style="background:${c.color}"></span>${c.name}
+        </span>
+        <span class="summary-item-price">$${c.price}</span>
+      </div>`
+    ).join('');
+
+    // Enable CTA
+    document.getElementById('cta-btn').disabled = false;
+    document.getElementById('cta-note').textContent = `Your box is ready! 🎉 4 loaves · $${boxPrice}.00`;
+
+  } else {
+    const remaining = 4 - filledCount;
+    document.getElementById('retail-total').textContent = filledCount > 0 ? `$${retailTotal}.00 so far` : '—';
+    document.getElementById('discount-amt').textContent = '—';
+    document.getElementById('box-total').textContent    = `Select ${remaining} more loaf${remaining !== 1 ? 'es' : ''}`;
+    document.getElementById('savings-badge').style.display = 'none';
+    document.getElementById('summary-reveal').classList.remove('visible');
+    document.getElementById('cta-btn').disabled = true;
+    document.getElementById('cta-note').textContent = filledCount > 0
+      ? `${filledCount} of 4 loaves selected — keep going!`
+      : 'Choose all 4 loaves to unlock your box price';
+  }
+
+  // Allergen warning
+  const awEl = document.getElementById('allergen-warning');
+  if (allergens.size > 0) {
+    document.getElementById('allergen-list').textContent = [...allergens].join(' and ');
+    awEl.classList.add('visible');
+  } else {
+    awEl.classList.remove('visible');
+  }
+}
+
+// ── ADD TO CART ───────────────────────────────────────────────
+function addToCart() {
+  // Collect the selection
+  const selected = [];
+  for (let i = 1; i <= 4; i++) {
+    const sel  = document.getElementById(`sel-${i}`);
+    const cake = CAKES.find(c => c.id == sel.value);
+    if (cake) selected.push(cake);
+  }
+
+  const retailTotal = selected.reduce((s, c) => s + c.price, 0);
+  const boxPrice    = retailTotal - Math.round(retailTotal * 0.10);
+
+  // Build order note — passes selection details to GoDaddy checkout
+  const note = selected.map((c, i) => `Loaf ${i+1}: ${c.name}`).join(' | ');
+  const fullUrl = `${CART_URL}?note=${encodeURIComponent(note)}&price=${boxPrice}`;
+
+  const btn = document.getElementById('cta-btn');
+  btn.textContent = 'Adding to cart…';
+  btn.disabled = true;
+
+  // If CART_URL is still the placeholder, show a preview instead of redirecting
+  const isLive = CART_URL !== "https://tdsquareddelights.com/store/equation-box";
+
+  setTimeout(() => {
+    if (isLive) {
+      // ── LIVE: redirect to GoDaddy checkout ──
+      btn.textContent = '✓ Redirecting to checkout…';
+      btn.style.background = '#4A8A4A';
+      setTimeout(() => { window.location.href = fullUrl; }, 600);
+    } else {
+      // ── PREVIEW MODE: show order summary until URL is set ──
+      btn.textContent = '✓ Ready — needs checkout URL';
+      btn.style.background = '#4A8A4A';
+      setTimeout(() => {
+        alert(
+          `TD² Delights — Equation Box Preview\n\n` +
+          selected.map((c,i) => `Loaf ${i+1}: ${c.name}  —  $${c.price}`).join('\n') +
+          `\n─────────────────────────────\n` +
+          `Retail value:  $${retailTotal}.00\n` +
+          `Your price:    $${boxPrice}.00  (10% off!)\n` +
+          `You save:      $${retailTotal - boxPrice}.00\n\n` +
+          `To go live: paste your GoDaddy product URL\ninto the CART_URL line at the top of the script.`
+        );
+        btn.textContent  = 'Add to Cart';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 500);
+    }
+  }, 600);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+buildDropdowns();
+</script>
+</body>
+</html>
